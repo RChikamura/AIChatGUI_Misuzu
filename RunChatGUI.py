@@ -9,6 +9,10 @@ import CeVIOAITalker as cevio #CeVIO AI関連のファイル
 # 文字コードの設定(念のため)
 locale.getpreferredencoding = lambda: "UTF-8"
 
+###モデルの指定(自分の環境に合わせ、各自書き換え)###
+dir_txt = "TunedModel\misuzu-gpt2-medium"
+tknz_txt = "rinna/japanese-gpt2-medium"
+
 ###UI関連###
 # ウィンドウを作成する
 window = tk.Tk()
@@ -72,10 +76,11 @@ checkbox.grid(row=2, column=1)
 
 ###AI関連###
 # テキスト生成の準備
-dir_txt = "TunedModel\misuzu-gpt2-medium"
-tknz_txt = "rinna/japanese-gpt2-medium"
 def setup(mdl_dir, tknz):
     output = Path(f"{mdl_dir}")
+    global device
+    global tokenizer
+    global model
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -107,11 +112,11 @@ def generate_reply(inp, num_gen=1):
                     sent = sent.replace('です', 'こんにちは', 1)
                 message.config(text=f"{sent}")
                 flag = False
+                if checkbox_var.get():
+                    cevio.speech_speak(sent)
             else:
                 error_count += 1
                 print("Failed to generate " + str(error_count) + " times. Retrying...")
-            if checkbox_var.get():
-                cevio.speech_speak(sent)
 
 # ウィンドウを表示する
 window.mainloop()
